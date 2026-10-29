@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khách mời · Anh Trung & Khánh Linh</title>
+<style>
+:root{--pink:#C9788D;--pink-dk:#A5566C;--pink-lt:#EBB6C3;--blush:#FADDE3;--cream:#FFF6F8;--ink:#5A3743;--muted:#A8838D;--line:#F2D5DC;--card:#fff;--ok:#4C9A6A;--warn:#D99A3A;--no:#B9505F}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:760px;margin:0 auto;padding:0 14px 90px}
+header{padding:22px 0 10px;text-align:center}
+header h1{margin:0;font-size:22px;font-weight:700;color:var(--pink-dk)}
+header p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:12px 0}
+@media(min-width:560px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+.stat b{display:block;font-size:26px;line-height:1.1;color:var(--pink-dk)}
+.stat span{font-size:12px;color:var(--muted)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+.panel h2{margin:0 0 10px;font-size:15px;color:var(--pink-dk)}
+.bars{display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:92px 1fr 44px;align-items:center;gap:8px;font-size:13px}
+.bar .t{height:12px;background:var(--blush);border-radius:99px;overflow:hidden}
+.bar .t i{display:block;height:100%;border-radius:99px;background:var(--pink)}
+.bar .n{text-align:right;font-weight:600}
+.two{display:grid;gap:12px}@media(min-width:560px){.two{grid-template-columns:1fr 1fr}}
+form.add{display:grid;gap:10px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:grid;gap:4px;font-size:12.5px;color:var(--muted)}
+input,select,textarea,button{font:inherit;color:var(--ink)}
+input,select,textarea{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:9px;background:#fff}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--pink-lt);border-color:var(--pink-lt)}
+textarea{min-height:76px;resize:vertical}
+.btn{border:0;background:var(--pink);color:#fff;padding:11px 16px;border-radius:9px;cursor:pointer;font-weight:600}
+.btn:active{background:var(--pink-dk)}
+.btn.ghost{background:#fff;color:var(--pink-dk);border:1px solid var(--pink-lt)}
+.btn.sm{padding:6px 10px;font-size:13px;font-weight:500}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.filters{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:10px}
+@media(min-width:560px){.filters{grid-template-columns:2fr 1fr 1fr}}
+.guest{border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:9px;background:#fff}
+.guest .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.guest .nm{font-weight:700;font-size:16px}
+.guest .meta{color:var(--muted);font-size:12.5px;margin-top:2px}
+.guest .note{font-size:13px;margin-top:4px;color:var(--ink)}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;white-space:nowrap}
+.s0{background:#EEE;color:#777}.s1{background:#FFF1D6;color:#9A6B12}.s2{background:#DDF3E5;color:#2F7A4D}.s3{background:#F8DADF;color:#9B3445}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px;align-items:center}
+.acts select{width:auto;padding:6px 8px;font-size:13px}
+.empty{text-align:center;color:var(--muted);padding:24px 0}
+.msg{font-size:13px;margin:8px 0 0;color:var(--pink-dk)}
+details summary{cursor:pointer;font-weight:600;color:var(--pink-dk)}
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 6px 16px rgba(160,85,110,.35);border-radius:99px;padding:13px 20px}
+.hide{display:none!important}
+.sync{margin:8px 0 0;font-size:12.5px;color:var(--muted)}
+.sync.ok{color:var(--ok)}.sync.err{color:var(--no)}
+</style></head><body>
+<div class="wrap">
+<header><h1>Danh sách khách mời</h1><p>Anh Trung &amp; Khánh Linh · 18/11/2026</p><p class="sync" id="sync"></p></header>
+
+<section class="stats" id="stats"></section>
+<section class="panel two">
+  <div><h2>Theo trạng thái (số người)</h2><div class="bars" id="barStatus"></div></div>
+  <div><h2>Theo bên (số người)</h2><div class="bars" id="barSide"></div><h2 style="margin-top:14px">Theo nhóm (số người)</h2><div class="bars" id="barGroup"></div></div>
+</section>
+
+<section class="panel" id="formPanel">
+  <h2 id="formTitle">Thêm khách mời</h2>
+  <form class="add" id="f" autocomplete="off">
+    <label>Tên khách<input id="name" required placeholder="Ví dụ: Anh Tuấn"></label>
+    <div class="row">
+      <label>Khách của<select id="side"><option>Chú rể</option><option>Cô dâu</option></select></label>
+      <label>Nhóm<select id="group"><option>Gia đình</option><option>Họ hàng</option><option>Bạn bè</option><option>Đồng nghiệp</option><option>Hàng xóm</option><option>Khác</option></select></label>
+    </div>
+    <div class="row">
+      <label>Số người đi cùng<input id="count" type="number" min="1" value="1"></label>
+      <label>Trạng thái<select id="status"></select></label>
+    </div>
+    <div class="row">
+      <label>Số điện thoại / Zalo<input id="phone" inputmode="tel" placeholder="Không bắt buộc"></label>
+      <label>Mừng cưới (VNĐ)<input id="gift" type="number" min="0" step="1000" placeholder="0"></label>
+    </div>
+    <label>Ghi chú<textarea id="note" placeholder="Ví dụ: ngồi bàn gia đình, đi cùng con nhỏ..."></textarea></label>
+    <div class="tools"><button class="btn" type="submit" id="saveBtn">Lưu khách</button><button class="btn ghost hide" type="button" id="cancelBtn">Hủy sửa</button></div>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Danh sách (<span id="shown">0</span>)</h2>
+  <div class="filters">
+    <input id="q" type="search" placeholder="Tìm theo tên, số điện thoại, ghi chú...">
+    <select id="fSide"><option value="">Tất cả các bên</option><option>Chú rể</option><option>Cô dâu</option></select>
+    <select id="fStatus"></select>
+  </div>
+  <div id="list"></div>
+</section>
+
+<section class="panel">
+  <details>
+    <summary>Dán tin nhắn xác nhận từ thiệp</summary>
+    <p style="font-size:13px;color:var(--muted)">Khách bấm "Gửi lời chúc &amp; xác nhận" trên thiệp sẽ sao chép một tin nhắn gửi qua Zalo. Dán tin đó vào đây, app tự thêm hoặc cập nhật khách.</p>
+    <textarea id="paste" placeholder="Xác nhận dự cưới Anh Trung &amp; Khánh Linh (18/11/2026)&#10;• Tên: ...&#10;• Tham dự: Chắc chắn rồi (2 người)&#10;• Khách của chú rể"></textarea>
+    <div class="tools" style="margin-top:8px"><button class="btn" id="pasteBtn" type="button">Thêm từ tin nhắn</button></div>
+    <p class="msg" id="pasteMsg"></p>
+  </details>
+</section>
+
+<section class="panel">
+  <details>
+    <summary>Kết nối Google Sheets, link thiệp, sao lưu</summary>
+    <h2 style="margin:12px 0 6px">Google Sheets (dùng chung danh sách)</h2>
+    <label>Link Web app (Apps Script)<input id="sheetUrl" placeholder="https://script.google.com/macros/s/.../exec"></label>
+    <label style="margin-top:8px">Mã truy cập<input id="sheetKey" type="password" placeholder="Mã đã đặt trong script"></label>
+    <div class="tools" style="margin-top:10px">
+      <button class="btn sm" id="connBtn" type="button">Kết nối</button>
+      <button class="btn ghost sm" id="pullBtn" type="button">Tải lại từ Sheets</button>
+      <button class="btn ghost sm" id="discBtn" type="button">Ngắt kết nối</button>
+    </div>
+    <p class="msg" id="connMsg"></p>
+    <label style="margin-top:10px">Link thiệp (dùng cho nút "Copy link thiệp")<input id="base"></label>
+    <div class="tools" style="margin-top:10px">
+      <button class="btn ghost sm" id="csvBtn" type="button">Xuất Excel (CSV)</button>
+      <button class="btn ghost sm" id="jsonBtn" type="button">Sao lưu (JSON)</button>
+      <button class="btn ghost sm" id="restoreBtn" type="button">Khôi phục từ JSON</button>
+      <input type="file" id="restoreFile" accept=".json,application/json" class="hide">
+    </div>
+    <p class="msg" id="toolMsg"></p>
+    <p style="font-size:12.5px;color:var(--muted)">Dữ liệu lưu trong trình duyệt của thiết bị này. Xóa dữ liệu trình duyệt sẽ mất danh sách, nên thỉnh thoảng bấm "Sao lưu".</p>
+  </details>
+</section>
+</div>
+<button class="btn fab" id="fab" type="button">+ Thêm khách</button>
+
+<script>
+(function(){
+'use strict';
+const KEY='khach-moi-v1', BASE_KEY='khach-moi-base';
+const STATUS=['Chưa mời','Đã mời','Sẽ đến','Không đến'];
+const GROUPS=['Gia đình','Họ hàng','Bạn bè','Đồng nghiệp','Hàng xóm','Khác'];
+const DEFAULT_BASE='https://minhnhat108.github.io/thiep-cuoi-anh-trung-khanh-linh/';
+const $=s=>document.querySelector(s);
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>(+n||0).toLocaleString('vi-VN')+' đ';
+let guests=[]; let editId=null;
+try{ guests=JSON.parse(localStorage.getItem(KEY)||'[]'); if(!Array.isArray(guests)) guests=[]; }catch(e){ guests=[]; }
+const persist=()=>{ try{ localStorage.setItem(KEY,JSON.stringify(guests)); }catch(e){ alert('Không lưu được dữ liệu. Hãy bấm Sao lưu (JSON) để giữ danh sách.'); } };
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const sCls=s=>'s'+Math.max(0,STATUS.indexOf(s));
+const people=g=>Math.max(1,+g.count||1);
+
+/* ---- Google Sheets sync ---- */
+const CFG_KEY='khach-moi-cfg';
+let cfg={url:'',key:''};
+try{ Object.assign(cfg,JSON.parse(localStorage.getItem(CFG_KEY)||'{}')); }catch(e){}
+const online=()=>!!(cfg.url&&cfg.key);
+const clock=()=>new Date().toLocaleTimeString('vi-VN');
+function setSync(txt,cls){ const el=$('#sync'); el.textContent=txt; el.className='sync'+(cls?' '+cls:''); }
+const norm=g=>({id:String(g.id),name:String(g.name||''),side:g.side==='Cô dâu'?'Cô dâu':'Chú rể',group:GROUPS.includes(g.group)?g.group:'Khác',count:Math.max(1,+g.count||1),status:STATUS.includes(g.status)?g.status:'Chưa mời',phone:g.phone==null?'':String(g.phone),gift:+g.gift||0,note:g.note==null?'':String(g.note),created:g.created||''});
+async function fetchRemote(){
+  const r=await fetch(cfg.url+(cfg.url.includes('?')?'&':'?')+'key='+encodeURIComponent(cfg.key));
+  const d=await r.json();
+  if(!d.ok) throw new Error(d.error==='key'?'sai mã truy cập':d.error);
+  return d.guests.filter(g=>g.name).map(norm);
+}
+async function api(body){
+  const r=await fetch(cfg.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({key:cfg.key},body))});
+  const d=await r.json();
+  if(!d.ok) throw new Error(d.error==='key'?'sai mã truy cập':d.error);
+}
+async function pull(quiet){
+  if(!online()) return;
+  if(!quiet) setSync('Đang đồng bộ...');
+  try{ guests=await fetchRemote(); persist(); render(); setSync('Đã đồng bộ với Google Sheets · '+clock(),'ok'); }
+  catch(e){ setSync('Không đồng bộ được ('+e.message+'). Đang hiện dữ liệu lưu trên máy.','err'); }
+}
+async function push(body){
+  persist(); render();
+  if(!online()) return;
+  setSync('Đang lưu lên Google Sheets...');
+  try{ await api(body); setSync('Đã lưu lên Google Sheets · '+clock(),'ok'); }
+  catch(e){ setSync('Chưa lưu được lên Sheets ('+e.message+'). Bấm "Tải lại từ Sheets" để kiểm tra.','err'); }
+}
+const cleanUrl=v=>v.trim();
+
+/* selects */
+$('#status').innerHTML=STATUS.map(s=>`<option>${s}</option>`).join('');
+$('#fStatus').innerHTML='<option value="">Tất cả trạng thái</option>'+STATUS.map(s=>`<option>${s}</option>`).join('');
+$('#base').value=(()=>{ try{ return localStorage.getItem(BASE_KEY)||DEFAULT_BASE; }catch(e){ return DEFAULT_BASE; } })();
+$('#base').addEventListener('change',()=>{ try{ localStorage.setItem(BASE_KEY,$('#base').value.trim()); }catch(e){} });
+
+/* stats */
+function bar(label,val,max,color){ return `<div class="bar"><span>${esc(label)}</span><div class="t"><i style="width:${max?Math.round(val/max*100):0}%;${color?'background:'+color:''}"></i></div><span class="n">${val}</span></div>`; }
+function renderStats(){
+  const sum=a=>a.reduce((t,g)=>t+people(g),0);
+  const total=sum(guests), yes=sum(guests.filter(g=>g.status==='Sẽ đến')), wait=sum(guests.filter(g=>g.status==='Đã mời')),
+        no=sum(guests.filter(g=>g.status==='Không đến')), gift=guests.reduce((t,g)=>t+(+g.gift||0),0);
+  $('#stats').innerHTML=
+    `<div class="stat"><b>${guests.length}</b><span>Khách / nhóm khách</span></div>`+
+    `<div class="stat"><b>${total}</b><span>Tổng số người</span></div>`+
+    `<div class="stat"><b style="color:var(--ok)">${yes}</b><span>Người sẽ đến</span></div>`+
+    `<div class="stat"><b style="color:var(--warn)">${wait}</b><span>Người chưa trả lời</span></div>`;
+  const cols=['#BDBDBD','#E4B04A','#5FAE7E','#C96A78'];
+  const st=STATUS.map(s=>[s,sum(guests.filter(g=>g.status===s))]);
+  $('#barStatus').innerHTML=st.map((x,i)=>bar(x[0],x[1],Math.max(1,total),cols[i])).join('')+
+    `<div class="bar" style="grid-template-columns:1fr auto;margin-top:6px"><span>Tổng tiền mừng cưới</span><span class="n" style="width:auto">${money(gift)}</span></div>`;
+  const sides=['Chú rể','Cô dâu'].map(s=>[s,sum(guests.filter(g=>g.side===s))]);
+  $('#barSide').innerHTML=sides.map(x=>bar(x[0],x[1],Math.max(1,total))).join('');
+  const grp=GROUPS.map(s=>[s,sum(guests.filter(g=>g.group===s))]).filter(x=>x[1]>0);
+  $('#barGroup').innerHTML=grp.length?grp.map(x=>bar(x[0],x[1],Math.max(1,total))).join(''):'<span style="color:var(--muted);font-size:13px">Chưa có dữ liệu</span>';
+}
+
+/* list */
+function filtered(){
+  const q=$('#q').value.trim().toLowerCase(), fs=$('#fSide').value, ft=$('#fStatus').value;
+  return guests.filter(g=>(!fs||g.side===fs)&&(!ft||g.status===ft)&&(!q||[g.name,g.phone,g.note,g.group].join(' ').toLowerCase().includes(q)))
+    .sort((a,b)=>a.name.localeCompare(b.name,'vi'));
+}
+function renderList(){
+  const L=filtered(); $('#shown').textContent=L.length;
+  $('#list').innerHTML=L.length?L.map(g=>`<div class="guest" data-id="${g.id}">
+    <div class="top"><div><div class="nm">${esc(g.name)}</div>
+    <div class="meta">${esc(g.side)} · ${esc(g.group)} · ${people(g)} người${g.phone?' · '+esc(g.phone):''}${+g.gift?' · mừng '+money(g.gift):''}</div></div>
+    <span class="pill ${sCls(g.status)}">${esc(g.status)}</span></div>
+    ${g.note?`<div class="note">${esc(g.note)}</div>`:''}
+    <div class="acts">
+      <select data-act="status" aria-label="Đổi trạng thái">${STATUS.map(s=>`<option${s===g.status?' selected':''}>${s}</option>`).join('')}</select>
+      <button class="btn ghost sm" data-act="link" type="button">Copy link thiệp</button>
+      <button class="btn ghost sm" data-act="edit" type="button">Sửa</button>
+      <button class="btn ghost sm" data-act="del" type="button">Xóa</button>
+    </div></div>`).join(''):'<div class="empty">Chưa có khách nào. Bấm "+ Thêm khách" để bắt đầu.</div>';
+}
+const render=()=>{ renderStats(); renderList(); };
+
+/* form */
+function resetForm(){ editId=null; $('#f').reset(); $('#count').value=1; $('#status').value='Chưa mời'; $('#formTitle').textContent='Thêm khách mời'; $('#saveBtn').textContent='Lưu khách'; $('#cancelBtn').classList.add('hide'); }
+$('#f').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name=$('#name').value.trim(); if(!name) return;
+  const rec={name,side:$('#side').value,group:$('#group').value,count:Math.max(1,+$('#count').value||1),status:$('#status').value,phone:$('#phone').value.trim(),gift:Math.max(0,+$('#gift').value||0),note:$('#note').value.trim()};
+  let saved=editId&&guests.find(x=>x.id===editId);
+  if(saved) Object.assign(saved,rec);
+  else{ saved=Object.assign({id:uid(),created:new Date().toISOString()},rec); guests.push(saved); }
+  push({action:'upsert',guest:saved}); resetForm(); $('#name').focus();
+});
+$('#cancelBtn').addEventListener('click',resetForm);
+$('#fab').addEventListener('click',()=>{ $('#formPanel').scrollIntoView({behavior:'smooth'}); setTimeout(()=>$('#name').focus(),350); });
+['#q','#fSide','#fStatus'].forEach(s=>$(s).addEventListener('input',renderList));
+
+/* row actions */
+function inviteLink(g){ const b=$('#base').value.trim()||DEFAULT_BASE; return b+(b.includes('?')?'&':'?')+'to='+encodeURIComponent(g.name); }
+async function copy(text,btn){ const old=btn.textContent; try{ await navigator.clipboard.writeText(text); btn.textContent='Đã copy'; }catch(e){ prompt('Sao chép link:',text); } setTimeout(()=>btn.textContent=old,1500); }
+$('#list').addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]'); if(!b||b.tagName==='SELECT') return;
+  const id=b.closest('.guest').dataset.id, g=guests.find(x=>x.id===id); if(!g) return;
+  if(b.dataset.act==='link') copy(inviteLink(g),b);
+  if(b.dataset.act==='del'){ if(confirm('Xóa khách "'+g.name+'"?')){ guests=guests.filter(x=>x.id!==id); push({action:'remove',id}); } }
+  if(b.dataset.act==='edit'){ editId=id; $('#name').value=g.name; $('#side').value=g.side; $('#group').value=g.group; $('#count').value=people(g); $('#status').value=g.status; $('#phone').value=g.phone||''; $('#gift').value=g.gift||''; $('#note').value=g.note||''; $('#formTitle').textContent='Sửa khách mời'; $('#saveBtn').textContent='Cập nhật'; $('#cancelBtn').classList.remove('hide'); $('#formPanel').scrollIntoView({behavior:'smooth'}); }
+});
+$('#list').addEventListener('change',e=>{
+  if(e.target.dataset.act!=='status') return;
+  const g=guests.find(x=>x.id===e.target.closest('.guest').dataset.id); if(g){ g.status=e.target.value; push({action:'upsert',guest:g}); }
+});
+
+/* paste RSVP message from the card */
+$('#pasteBtn').addEventListener('click',()=>{
+  const t=$('#paste').value, out=$('#pasteMsg');
+  const name=(/Tên:\s*(.+)/.exec(t)||[])[1]; if(!name){ out.textContent='Không thấy dòng "Tên:" trong tin nhắn.'; return; }
+  const go=(/Tham dự:\s*(.+?)\s*\(/.exec(t)||[])[1]||'', cnt=(/\(([^)]*)\)/.exec((/Tham dự:.*/.exec(t)||[''])[0])||[])[1]||'';
+  const status=/Tiếc|không đến/i.test(go)?'Không đến':'Sẽ đến';
+  const n=/một mình/i.test(cnt)?1:(+(/(\d+)/.exec(cnt)||[])[1]||1);
+  const side=/cô dâu/i.test(t)&&!/chú rể|cả hai/i.test(t)?'Cô dâu':'Chú rể';
+  const wish=(/Lời chúc:\s*([\s\S]+)/.exec(t)||[])[1];
+  const nm=name.trim(), ex=guests.find(g=>g.name.toLowerCase()===nm.toLowerCase());
+  let g=ex;
+  if(ex){ Object.assign(ex,{status,count:n}); if(wish) ex.note=(ex.note?ex.note+' | ':'')+'Chúc: '+wish.trim(); out.textContent='Đã cập nhật khách "'+nm+'".'; }
+  else{ g={id:uid(),created:new Date().toISOString(),name:nm,side,group:'Khác',count:n,status,phone:'',gift:0,note:wish?'Chúc: '+wish.trim():''}; guests.push(g); out.textContent='Đã thêm khách "'+nm+'" ('+status+', '+n+' người).'; }
+  push({action:'upsert',guest:g}); $('#paste').value='';
+});
+
+/* export / backup */
+function download(name,text,type){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([text],{type})); a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
+const stamp=()=>new Date().toISOString().slice(0,10);
+$('#csvBtn').addEventListener('click',()=>{
+  const cell=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  const head=['Tên','Bên','Nhóm','Số người','Trạng thái','SĐT','Mừng cưới','Ghi chú'];
+  const rows=guests.slice().sort((a,b)=>a.name.localeCompare(b.name,'vi')).map(g=>[g.name,g.side,g.group,people(g),g.status,g.phone,g.gift||0,g.note].map(cell).join(','));
+  download('khach-moi-'+stamp()+'.csv','\ufeff'+[head.map(cell).join(',')].concat(rows).join('\r\n'),'text/csv;charset=utf-8');
+  $('#toolMsg').textContent='Đã xuất '+guests.length+' khách.';
+});
+$('#jsonBtn').addEventListener('click',()=>{ download('khach-moi-backup-'+stamp()+'.json',JSON.stringify(guests,null,1),'application/json'); $('#toolMsg').textContent='Đã tải file sao lưu.'; });
+$('#restoreBtn').addEventListener('click',()=>$('#restoreFile').click());
+$('#restoreFile').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{
+    const d=JSON.parse(r.result); if(!Array.isArray(d)) throw 0;
+    if(!confirm('Khôi phục '+d.length+' khách? Danh sách hiện tại ('+guests.length+' khách) sẽ bị thay thế.')) return;
+    guests=d.filter(g=>g&&g.name).map(g=>norm(Object.assign({id:uid()},g)));
+    push({action:'replaceAll',guests}); $('#toolMsg').textContent='Đã khôi phục '+guests.length+' khách.';
+  }catch(err){ $('#toolMsg').textContent='File không hợp lệ.'; } e.target.value=''; };
+  r.readAsText(f);
+});
+
+/* connect / disconnect */
+$('#sheetUrl').value=cfg.url; $('#sheetKey').value=cfg.key;
+$('#connBtn').addEventListener('click',async()=>{
+  const url=cleanUrl($('#sheetUrl').value), key=$('#sheetKey').value.trim(), out=$('#connMsg');
+  if(!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec/.test(url)){ out.textContent='Link phải có dạng https://script.google.com/macros/s/.../exec'; return; }
+  if(!key){ out.textContent='Nhập mã truy cập.'; return; }
+  const prev=cfg; cfg={url,key}; out.textContent='Đang kết nối...';
+  try{
+    const remote=await fetchRemote();
+    if(remote.length&&guests.length&&!confirm('Google Sheets đang có '+remote.length+' khách. Danh sách trên máy này ('+guests.length+' khách) sẽ bị thay bằng danh sách trên Sheets. Tiếp tục?')){ cfg=prev; out.textContent='Đã hủy.'; return; }
+    try{ localStorage.setItem(CFG_KEY,JSON.stringify(cfg)); }catch(e){}
+    if(!remote.length&&guests.length){
+      if(confirm('Google Sheets đang trống. Đẩy '+guests.length+' khách trên máy này lên Sheets?')){ await api({action:'replaceAll',guests}); out.textContent='Đã kết nối và đẩy '+guests.length+' khách lên Sheets.'; setSync('Đã đồng bộ với Google Sheets · '+clock(),'ok'); return; }
+    }
+    guests=remote; persist(); render(); out.textContent='Đã kết nối. Có '+remote.length+' khách trên Sheets.'; setSync('Đã đồng bộ với Google Sheets · '+clock(),'ok');
+  }catch(e){ cfg=prev; out.textContent='Kết nối thất bại: '+e.message+'. Kiểm tra lại link, mã, và cài đặt "Anyone" khi triển khai.'; }
+});
+$('#pullBtn').addEventListener('click',()=>{ if(!online()){ $('#connMsg').textContent='Chưa kết nối Google Sheets.'; return; } pull(); });
+$('#discBtn').addEventListener('click',()=>{ cfg={url:'',key:''}; try{ localStorage.removeItem(CFG_KEY); }catch(e){} $('#sheetUrl').value=''; $('#sheetKey').value=''; $('#connMsg').textContent='Đã ngắt kết nối. App dùng dữ liệu lưu trên máy này.'; setSync('Chỉ lưu trên máy này (chưa nối Google Sheets).',''); });
+
+resetForm(); render();
+if(online()){ pull(); setInterval(()=>{ if(!document.hidden) pull(true); },30000); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) pull(true); }); }
+else setSync('Chỉ lưu trên máy này (chưa nối Google Sheets).','');
+})();
+</script>
+</body></html>
